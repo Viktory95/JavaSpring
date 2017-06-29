@@ -90,10 +90,7 @@
 
 <div class="container">
     <h2>Server file tree</h2>
-    <div class="left">
-        <ul id="tree">
-
-        </ul>
+    <div class="left" id="left">
     </div>
     <div class="right" id="textContainer">
         <p class="middleP" id="name"></p>
@@ -108,28 +105,27 @@
     var id = 0;
 
     //root tree building
-    buildTree('#tree',"");
+    buildTree("");
 
     function setPath(){
         $.get("http://localhost:8080/path?path=" + document.getElementById("inputPath").value, function(data) {
         });
         $("#tree").empty();
-        buildTree('#tree',"");
+        buildTree("");
     }
 
     //click method witch actions depends on tree's point type
     function openDirOrFile(el){
-
-        //if it's directory, than open or close
+        event.stopPropagation();
         if($(el).attr('type') === 'dir'){
-            //check element closed
             if($(el).attr('class') === 'closed') {
-                //append child elements
-                buildTree('#' + $(el).attr('id'), $(el).attr('path'));
+                //buildTree('#' + $(el).attr('id'), $(el).attr('path'));
                 $(el).attr('class', 'open');
+                $(el).find('ul').slideDown();
             }
-            //delete child elements if directory should be closed
-            else{
+            else {
+                $(el).attr('class', 'closed');
+                $(el).find('ul').slideUp();
             }
         }
         //open file
@@ -150,24 +146,38 @@
 
     //get list with files and directories from http://localhost:8080/treedata
     //it work with parameter 'path' that contains current directory path
-    function buildTree(el, path){
+    function buildTree(path){
         $.get("http://localhost:8080/treedata" + (path === "" ? "" : "?path=" + path), function(data) {
+
+            //var list = $(el).append("<ul></ul>").find('ul');
 
             //cycle on list
             $.each(data, function(i, treePoint) {
 
+                var el;
                 //add element
-                $(el).append(
-                        "<li>"+treePoint.type.substring(0,1) + " " +treePoint.name+"</li>");
+                if(treePoint.parentId == 0){
+                    el = $("<ul>"+treePoint.type.substring(0,1) + " " +treePoint.name+"</ul>");
+                    $('#left').append(el);
+                }
+                else {
+                    if('li' === treePoint.elementName) {
+                        el = $("<li>" + treePoint.type.substring(0, 1) + " " + treePoint.name + "</li>");
+                    }
+                    else {
+                        el = $("<ul>" + treePoint.type.substring(0, 1) + " " + treePoint.name + "</ul>");
+                    }
+                    $('#' + treePoint.parentId).append(el);
+                }
 
+                //console.log(el);
+                //console.log(treePoint);
+                    $(el).attr('id', treePoint.elementId);
                 //add attributes to current element
-                $('#tree li:contains('+treePoint.name+')').attr('id', id);
-                $('#'+id).attr('type', treePoint.type);
-                $('#'+id).attr('path', treePoint.path);
-                $('#'+id).attr('class', 'closed');
-                $('#'+id).attr('onClick', "openDirOrFile(this)");
 
-                id++;
+                $(el).attr('type', treePoint.type);
+                $(el).attr('path', treePoint.path);
+                $(el).attr('onClick', "openDirOrFile(this)");
 
             });
 

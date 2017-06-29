@@ -1,6 +1,7 @@
 package rest;
 
 import builders.DataBuilder;
+import builders.FileAssert;
 import entities.FileData;
 import entities.TreePoint;
 import loaders.PropertyLoader;
@@ -43,7 +44,8 @@ public class ExplorerController {
     @ResponseBody
     public ResponseEntity<List<TreePoint>> getTree(@RequestParam(value = "path", required = false, defaultValue = "") String path) {
 
-        List<TreePoint> treePoints = DataBuilder.getFileTreeList(path);
+        FileAssert fileAssert = new FileAssert();
+        List<TreePoint> treePoints = fileAssert.build(path);
 
         return new ResponseEntity<List<TreePoint>>(treePoints, HttpStatus.OK);
     }
@@ -72,7 +74,7 @@ public class ExplorerController {
             method = RequestMethod.GET)
     @ResponseBody
     public String setPath(@RequestParam(value = "path", required = false, defaultValue = "") String path) {
-        return PropertyLoader.getInstance().setProperty("path", path);
+        return PropertyLoader.getInstance().setProperty("path", DataBuilder.intoPath(path));
     }
 
 }

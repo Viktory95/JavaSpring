@@ -61,7 +61,7 @@ public final class DataBuilder {
             // All directories
             for (String file : files) {
                 if (new File(thisDir, file).isDirectory()) {
-                    treePoints.add(new TreePoint(file, thisDir + file, "dir"));
+                   // treePoints.add(new TreePoint(file, thisDir + file, "dir"));
                 }
             }
             // All files
@@ -69,7 +69,7 @@ public final class DataBuilder {
                 if (!new File(thisDir, file).isDirectory()) {
                     int dotIndex = file.lastIndexOf('.');
                     String ext = dotIndex > 0 ? file.substring(dotIndex + 1) : "";
-                    treePoints.add(new TreePoint(file, thisDir + file, "file"));
+                    //treePoints.add(new TreePoint(file, thisDir + file, "file"));
                 }
             }
         }
@@ -114,7 +114,7 @@ public final class DataBuilder {
         }
 
         //converting List to String
-        String s = stringList.stream().map(Object::toString).collect(Collectors.joining(","));
+        String s = stringList.stream().map(Object::toString).collect(Collectors.joining("\n"));
 
         return new FileData(path.getFileName().toString(), s);
     }
