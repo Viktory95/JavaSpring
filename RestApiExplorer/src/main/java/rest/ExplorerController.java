@@ -1,7 +1,7 @@
 package rest;
 
-import builders.DataBuilder;
-import builders.FileAssert;
+import builders.FileBuilder;
+import builders.TreeBuilder;
 import entities.FileData;
 import entities.TreePoint;
 import loaders.PropertyLoader;
@@ -44,27 +44,25 @@ public class ExplorerController {
     @ResponseBody
     public ResponseEntity<List<TreePoint>> getTree(@RequestParam(value = "path", required = false, defaultValue = "") String path) {
 
-        FileAssert fileAssert = new FileAssert();
-        List<TreePoint> treePoints = fileAssert.build(path);
+        TreeBuilder treeBuilder = new TreeBuilder();
+        List<TreePoint> treePoints = treeBuilder.build(path);
 
         return new ResponseEntity<List<TreePoint>>(treePoints, HttpStatus.OK);
     }
 
     /**
      * Response with
-     *
      * @param path - empty path
      *             or file is clicked by user
      * @return FileData - json structure
-     * with information about file
-     */
-    @RequestMapping(value = "/file", produces = {
+     * with information about file*/
+    @RequestMapping(value="/file", produces = {
             MediaType.APPLICATION_JSON_VALUE},
             method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<FileData> getFile(@RequestParam(value = "path", required = false, defaultValue = "") String path) {
+    public ResponseEntity<FileData> getFile (@RequestParam(value = "path", required = false, defaultValue = "") String path) {
 
-        FileData fileData = DataBuilder.getFileData(path);
+        FileData fileData = FileBuilder.getFileData(path);
 
         return new ResponseEntity<FileData>(fileData, HttpStatus.OK);
     }
@@ -74,7 +72,7 @@ public class ExplorerController {
             method = RequestMethod.GET)
     @ResponseBody
     public String setPath(@RequestParam(value = "path", required = false, defaultValue = "") String path) {
-        return PropertyLoader.getInstance().setProperty("path", DataBuilder.intoPath(path));
+        return PropertyLoader.getInstance().setProperty("path", path);
     }
 
 }

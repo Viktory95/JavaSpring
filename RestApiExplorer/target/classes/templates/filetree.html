@@ -108,10 +108,14 @@
     buildTree("");
 
     function setPath(){
-        $.get("http://localhost:8080/path?path=" + document.getElementById("inputPath").value, function(data) {
+        var newPath = document.getElementById("inputPath").value;
+        while(newPath.includes('\\')){
+            newPath = newPath.replace('\\', '/');
+        }
+        $.get("http://localhost:8080/path?path=" + newPath, function(data) {
         });
         $("#tree").empty();
-        buildTree("");
+        buildTree(newPath);
     }
 
     //click method witch actions depends on tree's point type
@@ -119,7 +123,6 @@
         event.stopPropagation();
         if($(el).attr('type') === 'dir'){
             if($(el).attr('class') === 'closed') {
-                //buildTree('#' + $(el).attr('id'), $(el).attr('path'));
                 $(el).attr('class', 'open');
                 $(el).find('ul').slideDown();
             }
@@ -137,7 +140,12 @@
     //get data about file from http://localhost:8080/file
     //it work with parameter 'path' that contains current file path
     function getFile(path){
-        $.get("http://localhost:8080/file" + (path === "" ? "" : "?path=" + path), function(data) {
+        var newPath = path;
+        while(newPath.includes('\\')){
+            newPath = newPath.replace('\\', '/');
+        }
+        console.log(newPath);
+        $.get("http://localhost:8080/file" + "?path=" + newPath, function(data) {
             //set text in div id=textContainer in html body
             $('#name').text(data.fileName);
             $('#data').text(data.text);
@@ -147,7 +155,11 @@
     //get list with files and directories from http://localhost:8080/treedata
     //it work with parameter 'path' that contains current directory path
     function buildTree(path){
-        $.get("http://localhost:8080/treedata" + (path === "" ? "" : "?path=" + path), function(data) {
+        var newPath = path;
+        while(newPath.includes('\\')){
+            newPath = newPath.replace('\\', '/');
+        }
+        $.get("http://localhost:8080/treedata" + "?path=" + newPath, function(data) {
 
             //var list = $(el).append("<ul></ul>").find('ul');
 
@@ -155,30 +167,41 @@
             $.each(data, function(i, treePoint) {
 
                 var el;
-                //add element
+                //add element in root
                 if(treePoint.parentId == 0){
                     el = $("<ul>"+treePoint.type.substring(0,1) + " " +treePoint.name+"</ul>");
                     $('#left').append(el);
                 }
+                //add other elements
                 else {
+                    //create li
                     if('li' === treePoint.elementName) {
                         el = $("<li>" + treePoint.type.substring(0, 1) + " " + treePoint.name + "</li>");
                     }
+                    //create ul
                     else {
                         el = $("<ul>" + treePoint.type.substring(0, 1) + " " + treePoint.name + "</ul>");
                     }
                     $('#' + treePoint.parentId).append(el);
                 }
 
-                //console.log(el);
-                //console.log(treePoint);
-                    $(el).attr('id', treePoint.elementId);
                 //add attributes to current element
-
+                $(el).attr('id', treePoint.elementId);
                 $(el).attr('type', treePoint.type);
-                $(el).attr('path', treePoint.path);
+
+                var newDirPath = treePoint.path;
+                while(newDirPath.includes('\\')){
+                    newDirPath = newDirPath.replace('\\', '/');
+                }
+
+                $(el).attr('path', newDirPath);
+                $(el).attr('class', "closed");
                 $(el).attr('onClick', "openDirOrFile(this)");
 
+            });
+            //close all list elements
+            $( "li" ).each(function() {
+                $(this).find('ul').slideUp();
             });
 
         });

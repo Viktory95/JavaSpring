@@ -1,7 +1,5 @@
 package loaders;
 
-import builders.DataBuilder;
-
 import java.io.*;
 import java.util.Properties;
 
@@ -45,7 +43,7 @@ public class PropertyLoader {
         if (fileTest.isDirectory() && fileTest.exists()) {
             try {
                 prop.clear();
-                prop.setProperty(key, DataBuilder.intoPath(value));
+                prop.setProperty(key, value);
                 File file = new File("src/main/resources/" + propFileName);
                 FileOutputStream fileOut = new FileOutputStream(file);
                 prop.store(fileOut, "Favorite Things");

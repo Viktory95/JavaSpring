@@ -1,10 +1,10 @@
-Реализовано web приложение для доступа к файловой директории сервера с помощью Restful api, Spring Framework и Jquery.
+Реализовано web приложение для доступа к файловой директории с помощью Restful api, Spring Framework и Jquery.
 Для запуска используется spring-boot-starter-thymeleaf, подключенный с помощью сборки maven.
 
-ExplorerController реализует Rest api логику и создает три страницы /filetree - главная страница берется из шаблона
-filetree.html и выводится в формате html,
+ExplorerController реализует Rest api логику и создает три страницы
+/filetree - главная страница берется из шаблона filetree.html и выводится в формате html,
 /treedata - json страница с информацией о файловой системе,
-/file - json фтраница с информацией об открытом файле.
+/file - json страница с информацией об открытом файле.
 
 DataBuilder отвечает за формирование денных - лист из элементов файлового дерева - TreePoint,
 считывание файла в FileData.
